@@ -1,0 +1,346 @@
+openapi: 3.1.0
+info:
+  title: FastAPI
+  description: ATK_horse_main_server
+  version: 0.1.0
+paths:
+  /dump_configuration:
+    get:
+      summary: Dump Configuration
+      description: 'Retrieves network and features information.
+
+
+        Returns:
+
+        - A list of Configuration objects.'
+      operationId: dump_configuration_dump_configuration_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Configuration'
+  /estimate:
+    post:
+      summary: Atk Estimate
+      description: 'Estimates, for each network instance, the presence of a possible
+        attack using a 2-stage machine learning chain
+
+        starting from its network state of a specific instant.
+
+
+        Request Body:
+
+        - A list of Estimate object
+
+
+        Returns:
+
+        - JSON response DoneResponse.'
+      operationId: Atk_estimate_estimate_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              items:
+                $ref: '#/components/schemas/Estimate'
+              type: array
+              title: Estimate
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DoneResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /is_ready:
+    get:
+      summary: Atk Ready
+      description: 'This endpoint verifies Analytic Toolkit is ready.
+
+
+        Returns:
+
+        - JSON response TrueResponse.'
+      operationId: atk_ready_is_ready_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrueResponse'
+  /detection:
+    get:
+      summary: Atk Detection
+      description: 'Returns the estimate for the last POST /estimate processed on
+        the system.
+
+        The estimate refers to each instance of the network and contains the type
+        of attack identified and the accuracy of the prediction.
+
+
+        Returns:
+
+        - A list of Detection objects.'
+      operationId: atk_detection_detection_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Detection'
+                type: array
+                title: Response Atk Detection Detection Get
+  /is_ok:
+    get:
+      summary: Atk Ok
+      description: 'This endpoint verifies Analytic Toolkit is up and running.
+
+
+        Returns:
+
+        - JSON response IsOK.'
+      operationId: atk_ok_is_ok_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IsOK'
+components:
+  schemas:
+    Attack:
+      properties:
+        attack:
+          type: string
+          title: Attack
+          description: The type of attack
+          example: NTP
+        accuracy:
+          type: number
+          title: Accuracy
+          description: The accuracy of the prediction of the attack
+          example: 0.5
+      type: object
+      required:
+      - attack
+      - accuracy
+      title: Attack
+    Configuration:
+      properties:
+        instances:
+          items:
+            $ref: '#/components/schemas/InstanceInfo'
+          type: array
+          title: Instances
+          description: The list of InstanceInfo objects
+          example: '[{"Name": "node1:Genoa RtA","id": 0,"Type": "routerA","Area":
+            "GENOA","Ip Address": "10.0.0.1"},{"Name": "node2:Milan RtB","id": 1,"Type":
+            "routerB","Area": "MILAN","Ip Address": "10.0.0.2"}]'
+        features:
+          items:
+            $ref: '#/components/schemas/FeatureInfo'
+          type: array
+          title: Features
+          description: The list of FeatureInfo objects
+          example: '[{"Name": "NTP","id": 0},{"Name": "DNS","id": 1},{"Name": "PFCP","id":
+            2}]'
+      type: object
+      required:
+      - instances
+      - features
+      title: Configuration
+    Detection:
+      properties:
+        instance:
+          type: string
+          title: Instance
+          description: The instance name
+          example: Test_Instance
+        detection:
+          items:
+            $ref: '#/components/schemas/Attack'
+          type: array
+          title: Detection
+          description: List of Attack objects (attacks and related accuracies)
+          example: '[{"attack":"NTP","accuracy":0.5}]'
+      type: object
+      required:
+      - instance
+      - detection
+      title: Detection
+    DoneResponse:
+      properties:
+        value:
+          type: string
+          title: Value
+          default: done
+      type: object
+      title: DoneResponse
+    Estimate:
+      properties:
+        timestamp:
+          type: string
+          title: Timestamp
+          description: The timestamp in Unix epoch format
+          example: '1713303373'
+        instances:
+          items:
+            $ref: '#/components/schemas/Instance'
+          type: array
+          title: Instances
+          description: List of Instance objects (instances name and related features).
+          example: '[{"instance": "Test_Instance","features": [{"feature": "NTP","value":
+            141.0},{"feature": "DNS","value": 125.0},{"feature": "PFCP","value": 138.0}]}]'
+      type: object
+      required:
+      - timestamp
+      - instances
+      title: Estimate
+    Feature:
+      properties:
+        feature:
+          type: string
+          title: Feature
+          description: The type of network feature
+          example: NTP
+        value:
+          type: number
+          title: Value
+          description: The value associated to a network feature at a specific instant
+          example: 141.0
+      type: object
+      required:
+      - feature
+      - value
+      title: Feature
+    FeatureInfo:
+      properties:
+        Name:
+          type: string
+          title: Name
+          description: The network feature name
+          example: NTP
+        id:
+          type: integer
+          title: Id
+          description: The network feature id
+          example: '0'
+      type: object
+      required:
+      - Name
+      - id
+      title: FeatureInfo
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    Instance:
+      properties:
+        instance:
+          type: string
+          title: Instance
+          description: The instance name
+          example: Test_Instance
+        features:
+          items:
+            $ref: '#/components/schemas/Feature'
+          type: array
+          title: Features
+          description: List of Feature objects (network features and related values)
+          example: '[{"feature": "NTP","value": 141.0},{"feature": "DNS","value":
+            125.0},{"feature": "PFCP","value": 138.0}]}]'
+      type: object
+      required:
+      - instance
+      - features
+      title: Instance
+    InstanceInfo:
+      properties:
+        Name:
+          type: string
+          title: Name
+          description: The instance name
+          example: Test_Instance
+        id:
+          type: integer
+          title: Id
+          description: The instance id
+          example: '1'
+        Type:
+          type: string
+          title: Type
+          description: The instance type
+          example: RouterA
+        Area:
+          type: string
+          title: Area
+          description: The area to which the instance belongs
+          example: Genoa
+        IpAddress:
+          type: string
+          title: Ipaddress
+          description: The instance IP Address
+          example: 10.0.2.3
+      type: object
+      required:
+      - Name
+      - id
+      - Type
+      - Area
+      - IpAddress
+      title: InstanceInfo
+    IsOK:
+      properties:
+        message:
+          type: string
+          title: Message
+          default: ok
+      type: object
+      title: IsOK
+    TrueResponse:
+      properties:
+        value:
+          type: string
+          title: Value
+          default: 'true'
+      type: object
+      title: TrueResponse
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+            - type: string
+            - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+      - loc
+      - msg
+      - type
+      title: ValidationError
