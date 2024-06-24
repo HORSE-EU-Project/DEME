@@ -27,9 +27,9 @@ app = FastAPI(description=__name__)
 
 ################ GLOBAL VARIABLES ###################
 estimate_post_count = 0
-mockup_periocity_max_value = 20
-mockup_periocity_default = 10
-mockup_periocity = mockup_periocity_default
+mockup_periodicity_max_value = 20
+mockup_periodicity_default = 10
+mockup_periodicity = mockup_periodicity_default
 detection_counter = 0
 dfConfiguration = None
 listOfDetectionForIteration = []
@@ -43,27 +43,27 @@ def gaussian(x, A, m, s):
     return round(result, 1) 
 
 def prepare_mocked_detection_results(dfConfiguration):
-    global mockup_periocity, listOfDetectionForIteration
+    global mockup_periodicity, listOfDetectionForIteration
     print("================================")
     print("\nConfiguration received:\n")
     print(dfConfiguration)
     print("================================")
     # gaussian parameters
-    m = mockup_periocity/2  # mean
+    m = mockup_periodicity/2  # mean
     s = 1.5                 # standard deviation
-    x_values = [i for i in range(mockup_periocity)]  # values from 0 to mockup_periocity-1 included
+    x_values = [i for i in range(mockup_periodicity)]  # values from 0 to mockup_periodicity-1 included
 
     dfNew = dfConfiguration[dfConfiguration.columns[:2]].copy()
     for index, row in dfConfiguration.iterrows():
         for column in dfConfiguration.columns[1:]:
-            mapping = {True: [gaussian(x, 0.9, m, s) for x in x_values], False: [5, 6, 7], False: np.round(np.random.rand(mockup_periocity) * 0.3, 1)}
+            mapping = {True: [gaussian(x, 0.9, m, s) for x in x_values], False: [5, 6, 7], False: np.round(np.random.rand(mockup_periodicity) * 0.3, 1)}
             dfNew[column] = dfConfiguration[column].map(mapping)
 
     print("\nPrepared accuracy for instances and features configured:\n")
     print(dfNew)
     print("================================\n\n")
     listOfDetectionForIteration = []
-    for iteration in range(mockup_periocity):
+    for iteration in range(mockup_periodicity):
         listOfDetection = []
         for index, row in dfNew.iterrows():
             attacks = []
@@ -93,24 +93,27 @@ def mockup_configure(mockupConfiguration:MockupConfiguration):
     """
         This POST prepare mocked attacks confidence for each network instance and network feature passed within the parameter.
         These mocked attacks confidence will be returned to each GET/detection invoked.
-        These mocked attacks confidence will be mockup_periocity   each mockup_periocity to each GET/detection invoked.
+        These mocked attacks confidence will be mockup_periodicity   each mockup_periodicity to each GET/detection invoked.
         For the feature and the instance where attack_simulation is False the attacks confidences will be always very low.
         For the feature and the instance where attack_simulation is True the attacks confidences will be 0.9 near the .
-        The mocked attacks confidence will be different for the first mockup_periocity GET/detection invoked than will be the same.
+        The mocked attacks confidence will be different for the first mockup_periodicity GET/detection invoked than will be the same.
 
         Request Body:
         - A MockupConfiguration object
 
         Returns:
-        - JSON response DoneResponse if mockup_periocity is less than 20
+        - JSON response DoneResponse if mockup_periodicity is less than 20
         - JSON response ErrorConfigResponse otherwise
     """
-    global dfConfiguration, mockup_periocity, mockup_periocity_max_value, detection_counter, listOfDetectionForIteration
+    global dfConfiguration, mockup_periodicity, mockup_periodicity_max_value, detection_counter, listOfDetectionForIteration
     print("\n\n================================>>>>> Received POST /deme_mockup_configure <<<<<============================")
-    mockup_periocity = mockupConfiguration.mockup_periocity
-    if mockup_periocity > mockup_periocity_max_value:
-        print("\nERROR: mockup_periocity maximum value (20) exceeded\n\n")
-        return DoneResponse(value="ERROR: max value allowed for mockup_periocity is 20")
+    mockup_periodicity = mockupConfiguration.mockup_periodicity
+    if mockup_periodicity > mockup_periodicity_max_value:
+        print("\nERROR: mockup_periodicity maximum value (20) exceeded\n\n")
+        return DoneResponse(value="ERROR: max value allowed for mockup_periodicity is 20")
+    elif mockup_periodicity <= 0:
+        print("\nERROR: mockup_periodicity cannot be 0 or less\n\n")
+        return DoneResponse(value="ERROR:  mockup_periodicity cannot be 0 or less")
     # initialization
     detection_counter = 0
     dfConfiguration = None
@@ -118,7 +121,7 @@ def mockup_configure(mockupConfiguration:MockupConfiguration):
 
     datafordataframe = []
 
-    print("mock_periodicity received: " + str(mockup_periocity))
+    print("mock_periodicity received: " + str(mockup_periodicity))
 
 
     nodes_attacks_configuration = mockupConfiguration.attacks_configuration
@@ -172,7 +175,7 @@ def mockup_detection():
     if not listOfDetectionForIteration:
         print("\n\nWARN: deme_mockup_configure POST not send yet\n\n")
         return []
-    detection_counter = detection_counter % mockup_periocity
+    detection_counter = detection_counter % mockup_periodicity
     serializable_detection = get_mocked_detection(detection_counter)
     print(" ===> DETECTION: " + str(serializable_detection))
     detection_counter += 1
