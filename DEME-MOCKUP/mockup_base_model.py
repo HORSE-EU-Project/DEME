@@ -18,7 +18,7 @@ class AttackConfiguration(BaseModel):
     attack_configuration: List[AttackSimulationConfiguration] = Field(...,description='List of AttackSimulationConfiguration objects (feature name and related attack simulation info)', example='[{"feature": "NTP","attack_simulation": True},{"feature": "DNS","attack_simulation": False},{"feature": "PFCP","attack_simulation": False}]}]')
 
 class MockupConfiguration(BaseModel):
-    mockup_periocity:int = Field(..., description='number of GET/detection cycles', example=10)
+    mockup_periodicity:int = Field(..., description='number of GET/detection cycles', example=10)
     attacks_configuration:List[AttackConfiguration] = Field(...,description='List of AttackConfiguration objects (instance name and related features)', example='[{"instance": "Test_Instance","attack_configuration": [{"feature": "NTP","attack_simulation":"True"},{"feature": "DNS","attack_simulation": "False"},{"feature": "PFCP","attack_simulation": "False"}]}]')
 ############### /mockupConfiguration ###################
 
