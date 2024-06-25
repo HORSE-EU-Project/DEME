@@ -72,7 +72,7 @@ For example, if you are monitoring NTP, DNS and PFCP counters on two nodes, let'
 
 ```
 curl -X POST -H "Content-Type: application/json" -d '{
-    "mockup_periocity": 10,
+    "mockup_periodicity": 10,
     "attacks_configuration": [
         {
             "instance": "Genoa",
@@ -111,8 +111,8 @@ curl -X POST -H "Content-Type: application/json" -d '{
     ]
 }' http://localhost:8091/deme_mockup_configure
 ```
-By setting ```mockup_periocity``` to the value 10 the accuracy values ​​returned by GET/detection API will be different for the first 10 calls and then the accuracy ​​returned values will be repeated cyclically (the values returned to the 11th GET/detection call are equals to the values returned to the first call, the retuned values of the 12th GET/detection call are equals to the value returned by the second call and so on).\
-The maximum value allowed for ```mockup_periocity``` is 20.
+By setting ```mockup_periodicity``` to the value 10 the accuracy values ​​returned by GET/detection API will be different for the first 10 calls and then the accuracy ​​returned values will be repeated cyclically (the values returned to the 11th GET/detection call are equals to the values returned to the first call, the retuned values of the 12th GET/detection call are equals to the value returned by the second call and so on).\
+The maximum value allowed for ```mockup_periodicity``` is 20.
 
 
 ## Step5: Call GET/detection or POST/estimate APIs (port 8091)
