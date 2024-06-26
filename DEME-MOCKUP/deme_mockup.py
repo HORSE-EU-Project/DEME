@@ -67,11 +67,17 @@ def prepare_mocked_detection_results(dfConfiguration):
         listOfDetection = []
         for index, row in dfNew.iterrows():
             attacks = []
+            attack = None
             for column in dfNew.columns[1:]:
-                attack = Attack(attack=column, accuracy=row[column][iteration])
-                attacks.append(attack)
+                if attack == None:
+                    attack = Attack(attack=column, accuracy=row[column][iteration])
+                else:
+                    if attack.accuracy <= row[column][iteration]:
+                        attack = Attack(attack=column, accuracy=row[column][iteration])
+            attacks.append(attack)
             detection = Detection(instance=row['instanceName'], detection=attacks)
             listOfDetection.append(detection)
+
         listOfDetectionForIteration.append(listOfDetection)
 
 def get_mocked_detection(detection_counter):
