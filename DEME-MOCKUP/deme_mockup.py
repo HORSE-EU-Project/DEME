@@ -72,7 +72,7 @@ def prepare_mocked_detection_results(dfConfiguration):
                 if attack == None:
                     attack = Attack(attack=column, accuracy=row[column][iteration])
                 else:
-                    if attack.accuracy <= row[column][iteration]:
+                    if attack.accuracy < row[column][iteration]:
                         attack = Attack(attack=column, accuracy=row[column][iteration])
             attacks.append(attack)
             detection = Detection(instance=row['instanceName'], detection=attacks)
