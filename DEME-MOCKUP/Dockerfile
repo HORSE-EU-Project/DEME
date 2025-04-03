@@ -10,7 +10,7 @@ ARG APP_DIR="/opt/app"
 WORKDIR ${APP_DIR}
 
 # Install any necessary package
-RUN pip install fastapi[all] uvicorn "pandas==${PANDAS_VERSION}" requests scikit-learn "numpy==${NUMPY_VERSION}"
+RUN pip install fastapi[all] uvicorn "pandas==${PANDAS_VERSION}" requests "numpy==${NUMPY_VERSION}"
 
 # Copy the application
 COPY *.py /opt/app/

@@ -3,12 +3,10 @@
 
 import sys
 import time
-from typing import Union
 import numpy as np
 import pandas as pd
 from fastapi import FastAPI
 from typing import List
-import numpy as np
 import math
 
 import uvicorn
@@ -155,6 +153,7 @@ def mockup_configure(mockupConfiguration:MockupConfiguration):
 
 @app.post("/estimate", response_model=DoneResponse)
 def mockup_estimate(estimate:List[Estimate]):
+    global detection_counter
     """
         This mocked post just execute a syntax checking on the input parameters.
 
@@ -166,6 +165,7 @@ def mockup_estimate(estimate:List[Estimate]):
     """
     print("\n\n================================>>>>> Received POST /estimate <<<<<============================")
     time.sleep(4)
+    detection_counter += 1
     return DoneResponse
 
 @app.get("/detection", description='', response_model=List[Detection])
@@ -184,7 +184,6 @@ def mockup_detection():
     detection_counter = detection_counter % mockup_periodicity
     serializable_detection = get_mocked_detection(detection_counter)
     print(" ===> DETECTION: " + str(serializable_detection))
-    detection_counter += 1
     return serializable_detection
 
 # def init():

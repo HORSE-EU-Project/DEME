@@ -32,7 +32,7 @@ From a new shell run the command
 ```python3 deme_mockup.py```
 
 ### Option 2. Run the application in a docker container
-#### create the image locally specifying the version, for instance 1
+#### create the image locally specifying the version, for 1 instance
 From a new shell run the command
 ```./build-deme-mockup.sh 1```
 
@@ -68,29 +68,12 @@ DEME mockup must be configured via ```deme_mockup_configure POST```
 
 On the basis of your network instances and network features you can instruct DEME mockup to reply to GET/detection rest.
 
-For example, if you are monitoring NTP, DNS and PFCP counters on two nodes, let's call them Genoa and Athens, of the network and you want simulate an attack only on PFCP of Genoa you have to send this configuration POST to DEME-mockup (in the example via curl):
+For example, if you are monitoring NTP, DNS and PFCP counters on two instances, let's call them Genoa and Athens, of the network and you want simulate an attack only on PFCP of Genoa you have to send this configuration POST to DEME-mockup (in the example via curl):
 
 ```
 curl -X POST -H "Content-Type: application/json" -d '{
     "mockup_periodicity": 10,
     "attacks_configuration": [
-        {
-            "instance": "Genoa",
-            "attack_configuration": [
-                {
-                    "feature": "NTP",
-                    "attack_simulation": false
-                },
-                {
-                    "feature": "DNS",
-                    "attack_simulation": false
-                },
-                {
-                    "feature": "PFCP",
-                    "attack_simulation": true
-                }
-            ]
-        },
         {
             "instance": "Athens",
             "attack_configuration": [
@@ -117,7 +100,7 @@ The maximum value allowed for ```mockup_periodicity``` is 20.
 
 ## Step5: Call GET/detection or POST/estimate APIs (port 8091)
 ### GET/detection
-Depending on the DEME-mockup configuration DEME-mockup  will return the accuracy of an attach for each nodes
+Depending on the DEME-mockup configuration DEME-mockup  will return the accuracy of an attach for each instance
 
 example: curl detection command:
 ```curl -X GET http://localhost:8091/detection```
